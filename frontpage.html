@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="shortcut icon"
+      href="res/images/hp-logo.png"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
+    <link rel="stylesheet" href="frontpageStyle.css" />
+    <title>Navigation System</title>
+  </head>
+  <body>
+    <nav>
+      <div class="menu-icon" onclick="toggleMenu()">☰</div>
+      <div class="brand-container">
+        <img src="res/images/hp-logo.png" width="49" />
+        <h2 class="brand-title">Palanyag Cemetery Digital Navigation System</h2>
+      </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <ul>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Services</a></li>
+        <li><a href="#">Contacts</a></li>
+      </ul>
+    </div>
+
+    <div class="main-content" id="main-content">
+      <form class="login">
+        <img id="pqLogo" src="res/images/pqLogo.png" alt="" />
+        <div id="slideshow">
+          <div class="slide-wrapper">
+            <div class="slide"></div>
+            <div class="slide"></div>
+            <div class="slide"></div>
+            <div class="slide"></div>
+            <div class="slide"></div>
+          </div>
+        </div>
+        <div class="login-details">
+          <img src="res/images/hp-logo.png" alt="" />
+          <div class="details">
+            <label for="email"
+              >EMAIL ADDRESS
+              <input
+                name="email"
+                type="email"
+                placeholder="Enter e-mail here"
+                required
+            /></label>
+            <label for="password"
+              >PASSWORD
+              <input
+                name="password"
+                type="password"
+                placeholder="Enter password"
+                required
+            /></label>
+          </div>
+          <button type="submit">Log in</button>
+          <a href="#">Forgot Password</a>
+          <a href="#">Signup!</a>
+        </div>
+      </form>
+      <div class="map-container">
+        <div class="search-container">
+          <div class="search-box">
+            <img src="res/images/search.png" alt="" />
+            <input
+              type="text"
+              id="search"
+              onkeydown="if(event.key === 'Enter') searchGrave()"
+              class="search-bar"
+              placeholder="name, birthday, death date...."
+            />
+          </div>
+        </div>
+        <div class="map-vignette">
+          <div id="map"></div>
+        </div>
+      </div>
+    </div>
+
+    <svg>
+      <filter id="noiseFilter">
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.9"
+          stitchTiles="stitch"
+        />
+        <feColorMatrix
+          in="colorNoise"
+          type="matrix"
+          values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1 0"
+        />
+        <feComposite operator="in" in2="SourceGraphic" result="monoNoise" />
+        <feBlend in="SourceGraphic" in2="monoNoise" mode="screen" />
+      </filter>
+    </svg>
+
+    <script>
+      // Set map focus on Palanyag with coordinates
+      var map = L.map("map").setView(
+        [14.48829245842671, 120.98897736022812],
+        19
+      );
+
+      // 2nd choice map style
+      var OpenStreetMap_France = L.tileLayer(
+        "https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png",
+        {
+          maxZoom: 20,
+          attribution:
+            '&copy; OpenStreetMap France | &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }
+      );
+
+      // Current Map Style
+      var CartoDB_Voyager = L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+        {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          subdomains: "abcd",
+          maxZoom: 20,
+        }
+      ).addTo(map);
+
+      // Original Map Style
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        maxZoom: 19,
+        attribution:
+          '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      });
+
+      // Cemetery Data, prototype purposes only
+      var cemeteryData = [
+        {
+          name: "John Doe",
+          dod: "2020-05-10",
+          age: 70,
+          lat: 14.488331375689809,
+          lon: 120.98878554544292,
+        },
+        {
+          name: "Jane Smith",
+          dod: "2021-07-22",
+          age: 61,
+
+          lat: 14.487982740111919,
+          lon: 120.98883918962736,
+        },
+        {
+          name: "Michael Brown",
+          dod: "2019-03-12",
+          age: 80,
+          lat: 14.48859072513555,
+          lon: 120.989335319557,
+        },
+      ];
+
+      // Icons
+      var tomb = L.icon({
+        iconUrl: "res/images/tomb.webp",
+
+        iconSize: [25],
+      });
+
+      let invisibleIcon = L.icon({
+        iconUrl:
+          "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAgAB/evOawAAAABJRU5ErkJggg==",
+        iconSize: [1, 1], // Make it tiny
+        iconAnchor: [1, 1],
+      });
+
+      // Display all cemetery data on map on load
+      cemeteryData.forEach((person) => {
+        let marker = L.marker([person.lat, person.lon], { icon: tomb })
+          .addTo(map)
+          .bindPopup(
+            `<b>${person.name}</b><br>Date of Death: ${person.dod}<br>Age: ${person.age}`,
+            { className: "popup" }
+          );
+
+        marker.on("click", function () {
+          marker.openPopup();
+          map.setView([person.lat, person.lon], 19);
+        });
+      });
+
+      // Focus on specific grave if search matches
+      function searchGrave() {
+        let query = document.getElementById("search").value.toLowerCase();
+        if (query.trim() === "")
+          return alert("Please enter a name, date of death, or age.");
+
+        let results = cemeteryData.filter(
+          (person) =>
+            person.name.toLowerCase().includes(query) ||
+            person.dod.includes(query) ||
+            person.age.toString() === query
+        );
+
+        if (results.length > 0) {
+          results.forEach((person) => {
+            let marker = L.marker([person.lat, person.lon], {
+              icon: invisibleIcon,
+            })
+              .addTo(map)
+              .bindPopup(
+                `<b>${person.name}</b><br>Date of Death: ${person.dod}<br>Age: ${person.age}`,
+                { className: "popup" }
+              )
+              .openPopup();
+
+            map.setView([person.lat, person.lon], 20); // Zoom to found location
+          });
+        } else {
+          alert("No matching records found.");
+        }
+      }
+    </script>
+
+    <script>
+      function toggleMenu() {
+        let sidebar = document.getElementById("sidebar");
+        let mainContent = document.getElementById("main-content");
+
+        if (sidebar.classList.contains("open")) {
+          sidebar.classList.remove("open");
+          mainContent.classList.remove("dark");
+
+          // mainContent.classList.remove("shift");
+        } else {
+          sidebar.classList.add("open");
+          mainContent.classList.add("dark");
+
+          // mainContent.classList.add("shift");
+        }
+      }
+    </script>
+  </body>
+</html>
