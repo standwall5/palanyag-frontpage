@@ -149,6 +149,9 @@
             />
           </div>
         </div>
+        <a href="#" id="reset" onclick="resetMap()"
+          ><img src="res/images/reset-icon.png" alt=""
+        /></a>
         <div class="map-vignette">
           <div id="map"></div>
         </div>
@@ -322,6 +325,10 @@
         } else {
           alert("No matching records found.");
         }
+      }
+
+      function resetMap() {
+        map.setView([14.48829245842671, 120.98897736022812], 19);
       }
     </script>
 

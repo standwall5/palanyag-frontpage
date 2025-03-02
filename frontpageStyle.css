@@ -122,6 +122,36 @@ nav {
   z-index: 9;
 }
 
+#reset {
+  position: absolute;
+  bottom: -2rem;
+  right: 0;
+  background-color: white;
+  padding: 1rem;
+  border-radius: 50%;
+  z-index: 100;
+  filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.473));
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  margin: 2rem;
+  transition: 0.3s;
+}
+
+#reset img {
+  filter: brightness(0.2);
+  width: 2rem;
+  transition: 0.3s;
+}
+
+#reset:hover {
+  transform: scale(1.1);
+}
+
+#reset:hover img {
+  filter: brightness(0.5);
+}
+
 /* ################################## */
 /* ######### Pop-up styling ######### */
 /* ################################## */
