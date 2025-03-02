@@ -41,7 +41,7 @@
     </div>
 
     <div class="main-content" id="main-content">
-      <form class="login">
+      <div class="login">
         <img id="pqLogo" src="res/images/pqLogo.png" alt="" />
         <div id="slideshow">
           <div class="slide-wrapper">
@@ -52,7 +52,8 @@
             <div class="slide"></div>
           </div>
         </div>
-        <div class="login-details">
+        <!-- Login -->
+        <form id="login-details" class="login-details">
           <img src="res/images/hp-logo.png" alt="" />
           <div class="details">
             <label for="email"
@@ -73,10 +74,68 @@
             /></label>
           </div>
           <button type="submit">Log in</button>
-          <a href="#">Forgot Password</a>
-          <a href="#">Signup!</a>
-        </div>
-      </form>
+          <a href="#" id="forgot">Forgot Password</a>
+          <a href="#" id="signup">Signup!</a>
+        </form>
+
+        <!-- Sign-up -->
+        <form id="signup-details" class="signup-details login-details">
+          <img src="res/images/hp-logo.png" alt="" />
+          <div class="details">
+            <label for="email"
+              >FULL NAME
+              <input
+                name="name"
+                type="text"
+                placeholder="ex. Juan P. Dela Cruz"
+                required
+            /></label>
+            <label for="email"
+              >EMAIL ADDRESS
+              <input
+                name="email"
+                type="email"
+                placeholder="Enter e-mail here"
+                required
+            /></label>
+            <label for="password"
+              >PASSWORD
+              <input
+                name="password"
+                type="password"
+                placeholder="Enter password"
+                required
+            /></label>
+            <label for="repeat-password"
+              >REPEAT PASSWORD
+              <input
+                name="password"
+                type="password"
+                placeholder="Repeat password"
+                required
+            /></label>
+          </div>
+          <button type="submit">Create Account</button>
+          <a href="#" class="login-btn">Already have an account? Login!</a>
+        </form>
+
+        <!-- Forgot details -->
+        <form id="forgot-details" class="forgot-details login-details">
+          <img src="res/images/hp-logo.png" alt="" />
+          <div class="details">
+            <label for="email"
+              >EMAIL ADDRESS
+              <input
+                name="email"
+                type="email"
+                placeholder="Enter e-mail here"
+                required
+            /></label>
+          </div>
+          <button type="submit">Change password</button>
+          <a href="#" class="login-btn">Login!</a>
+        </form>
+      </div>
       <div class="map-container">
         <div class="search-container">
           <div class="search-box">
@@ -112,6 +171,36 @@
         <feBlend in="SourceGraphic" in2="monoNoise" mode="screen" />
       </filter>
     </svg>
+
+    <!-- Show login, signup & forgot -->
+    <script>
+      var login = document.getElementById("login-details");
+      var signup = document.getElementById("signup-details");
+      var forgot = document.getElementById("forgot-details");
+
+      // Show signup
+      document.getElementById("signup").addEventListener("click", function () {
+        signup.style.display = "flex";
+        login.style.display = "none";
+        forgot.style.display = "none";
+      });
+
+      // Show forgot details
+      document.getElementById("forgot").addEventListener("click", function () {
+        forgot.style.display = "flex";
+        signup.style.display = "none";
+        login.style.display = "none";
+      });
+
+      // Show login
+      document.querySelectorAll(".login-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          document.getElementById("login-details").style.display = "flex";
+          document.getElementById("signup-details").style.display = "none";
+          document.getElementById("forgot-details").style.display = "none";
+        });
+      });
+    </script>
 
     <script>
       // Set map focus on Palanyag with coordinates

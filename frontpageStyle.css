@@ -296,6 +296,10 @@ svg {
   gap: 0.5rem;
 }
 
+.signup-details,
+.forgot-details {
+  display: none;
+}
 .details label {
   display: flex;
   flex-direction: column;
