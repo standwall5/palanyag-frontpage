@@ -206,6 +206,10 @@
     </script>
 
     <script>
+      let polyline;
+
+      let startingPoint = [14.488235352726106, 120.98922252199092];
+
       // Set map focus on Palanyag with coordinates
       var map = L.map("map").setView(
         [14.48829245842671, 120.98897736022812],
@@ -280,6 +284,8 @@
         iconAnchor: [1, 1],
       });
 
+      var pointB;
+
       // Display all cemetery data on map on load
       cemeteryData.forEach((person) => {
         let marker = L.marker([person.lat, person.lon], { icon: tomb })
@@ -292,6 +298,10 @@
         marker.on("click", function () {
           marker.openPopup();
           map.setView([person.lat, person.lon], 19);
+          pointB = [person.lat, person.lon];
+          if (pointB) {
+            placeMarkers();
+          }
         });
       });
 
@@ -321,9 +331,42 @@
               .openPopup();
 
             map.setView([person.lat, person.lon], 20); // Zoom to found location
+            pointB = [person.lat, person.lon];
+            placeMarkers();
           });
         } else {
           alert("No matching records found.");
+        }
+      }
+
+      function placeMarkers() {
+        var fixedRange = -0.0005;
+        var pointC = [startingPoint[0] + 0.0002, startingPoint[1] + fixedRange];
+
+        // Remove previous polyline
+        if (polyline) map.removeLayer(polyline);
+
+        // Create a new polyline with explicit assignment to verify each step
+        var latlngs = [startingPoint, pointC, pointB];
+
+        // Log the coordinates to verify them
+        console.log("Path coordinates:", JSON.stringify(latlngs));
+
+        // Create a new polyline with slightly different options
+        try {
+          polyline = new L.Polyline(latlngs, {
+            color: "red",
+            weight: 6,
+            opacity: 0.9,
+            smoothFactor: 1,
+          });
+
+          // Add it to the map
+          polyline.addTo(map);
+
+          console.log("New polyline created and added:", polyline);
+        } catch (e) {
+          console.error("Error creating polyline:", e);
         }
       }
 
